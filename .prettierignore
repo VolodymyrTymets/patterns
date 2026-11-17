@@ -1,0 +1,7 @@
+.venv
+node_modules
+uv.lock
+package-lock.json
+.idea
+.serena
+.claude
