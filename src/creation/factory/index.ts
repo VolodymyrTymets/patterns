@@ -38,12 +38,11 @@ class SmsNotification extends Notification {
     }
 }
 
-
 const main = () => {
     const sendes: Notification[] = [
         new EmailNotification(),
-        new SmsNotification()
-    ]
-    sendes.forEach(sender => sender.send('Hello World!'));
-}
+        new SmsNotification(),
+    ];
+    sendes.forEach((sender) => sender.send('Hello World!'));
+};
 main();
