@@ -74,8 +74,8 @@ class NotificationService implements INotificationService {
 const main = () => {
     const services: INotificationService[] = [
         new NotificationService(new EmailNotificationFactory()),
-        new NotificationService(new SmsNotificationFactory())
-    ]
-    services.forEach(service => service.send('Hello World!'));
-}
+        new NotificationService(new SmsNotificationFactory()),
+    ];
+    services.forEach((service) => service.send('Hello World!'));
+};
 main();

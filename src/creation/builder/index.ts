@@ -50,7 +50,7 @@ abstract class NotificationBuilder implements INotificationBuilder {
         const notification: INotification = {
             recipient: this.recipient,
             subject: this.subject,
-            body: this.body
+            body: this.body,
         };
         // the builder is ready for the next product and never shares state with the one returned
         this.reset();
@@ -92,7 +92,11 @@ class NotificationDirector {
     constructor(builder: INotificationBuilder) {
         this.builder = builder;
     }
-    constructNotification(recipient: string, body: string, subject?: string): INotification {
+    constructNotification(
+        recipient: string,
+        body: string,
+        subject?: string,
+    ): INotification {
         this.builder.reset().setRecipient(recipient);
         if (subject) {
             this.builder.setSubject(subject);
@@ -102,8 +106,12 @@ class NotificationDirector {
 }
 // Client
 const main = () => {
-    const emailNotification = new NotificationDirector(new EmailNotificationBuilder()).constructNotification('test@gmail.com', 'Hello World!', 'Greeting');
-    const smsNotification = new NotificationDirector(new SmsNotificationBuilder()).constructNotification('1234567890', 'Hello World!');
+    const emailNotification = new NotificationDirector(
+        new EmailNotificationBuilder(),
+    ).constructNotification('test@gmail.com', 'Hello World!', 'Greeting');
+    const smsNotification = new NotificationDirector(
+        new SmsNotificationBuilder(),
+    ).constructNotification('1234567890', 'Hello World!');
     console.log('email: ', emailNotification, 'sms: ', smsNotification, '');
-}
+};
 main();

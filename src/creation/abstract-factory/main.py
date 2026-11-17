@@ -1,55 +1,72 @@
-from abc import abstractmethod, ABC
-from typing import List, Protocol
+from abc import ABC, abstractmethod
+from typing import Protocol
+
 
 # Abstract products
 class Sender(Protocol):
     def send(self, message: str) -> None:
         pass
+
+
 class Formatter(Protocol):
     def format(self, message: str) -> str:
         pass
+
 
 # Concrete products
 class EmailSender(Sender):
     def send(self, message: str) -> None:
         print(f"Sending email: {message}")
+
+
 class EmailFormatter(Formatter):
     def format(self, message: str) -> str:
         return f"Email format: {message}"
+
 
 # Concrete products
 class SmsSender(Sender):
     def send(self, message: str) -> None:
         print(f"Sending SMS: {message}")
+
+
 class SmsFormatter(Formatter):
     def format(self, message: str) -> str:
         return f"SMS format: {message}"
+
 
 # AbstractFactory
 class NotificationFactory(ABC):
     @abstractmethod
     def create_sender(self) -> Sender:
         pass
+
     @abstractmethod
     def create_formatter(self) -> Formatter:
         pass
+
 
 # Concrete factories
 class EmailNotificationFactory(NotificationFactory):
     def create_sender(self) -> Sender:
         return EmailSender()
+
     def create_formatter(self) -> Formatter:
         return EmailFormatter()
+
 
 class SmsNotificationFactory(NotificationFactory):
     def create_sender(self) -> Sender:
         return SmsSender()
+
     def create_formatter(self) -> Formatter:
         return SmsFormatter()
+
 
 class Notification(Protocol):
     def send(self, message: str) -> None:
         pass
+
 
 # Client
 class NotificationService(Notification):
@@ -63,12 +80,13 @@ class NotificationService(Notification):
 
 
 def main() -> None:
-    services: List[Notification] = [
+    services: list[Notification] = [
         NotificationService(EmailNotificationFactory()),
-        NotificationService(SmsNotificationFactory())
+        NotificationService(SmsNotificationFactory()),
     ]
     for service in services:
         service.send(message="Hello World!")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     main()
