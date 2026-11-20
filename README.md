@@ -49,6 +49,8 @@ Run all of them before you commit:
 npm run check && uv run ruff check . && uv run ruff format --check .
 ```
 
+The same checks run in CI (`.github/workflows/ci.yml`) on every pull request and on pushes to `main`.
+
 Configuration: `tsconfig.json` (strict, `moduleDetection: force` because every `index.ts` is a
 standalone script that declares its own `ISender`, `Notification`, ...), `eslint.config.js`,
 `.prettierrc.json`, and `[tool.ruff]` in `pyproject.toml`.

@@ -1,0 +1,45 @@
+name: CI
+
+on:
+    push:
+        branches: [main]
+    pull_request:
+
+permissions:
+    contents: read
+
+concurrency:
+    group: ci-${{ github.ref }}
+    cancel-in-progress: true
+
+jobs:
+    typescript:
+        name: TypeScript
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: actions/setup-node@v4
+              with:
+                  node-version: 24
+                  cache: npm
+            - run: npm ci
+            - name: Typecheck
+              run: npm run typecheck
+            - name: Lint
+              run: npm run lint
+            - name: Format check
+              run: npm run format:check
+
+    python:
+        name: Python
+        runs-on: ubuntu-latest
+        steps:
+            - uses: actions/checkout@v4
+            - uses: astral-sh/setup-uv@v5
+              with:
+                  enable-cache: true
+            - run: uv sync --locked
+            - name: Lint
+              run: uv run ruff check .
+            - name: Format check
+              run: uv run ruff format --check .
