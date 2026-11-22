@@ -1,3 +1,4 @@
+// Recipients
 type RecipientType =
     | {
           email: string;
@@ -17,18 +18,18 @@ class Notification {
 // Refined Abstraction
 class AlertNotification extends Notification {
     private formatMessage(message: string): string {
-        return `Alert: ${message}`;
+        return `ALERT: ${message}`;
     }
-    notify(message: string, to: RecipientType) {
+    notify(message: string, to: RecipientType): void {
         super.notify(this.formatMessage(message), to);
     }
 }
 
 class ReminderNotification extends Notification {
     private formatMessage(message: string): string {
-        return `Reminder: ${message}`;
+        return `REMINDER: ${message}`;
     }
-    notify(message: string, to: RecipientType) {
+    notify(message: string, to: RecipientType): void {
         super.notify(this.formatMessage(message), to);
     }
 }
@@ -56,10 +57,12 @@ class SmsSender implements ISender {
 }
 // Client
 const main = () => {
-    const alert = new AlertNotification(new EmailSender());
-    alert.notify('Hello World!', { email: 'test@gmail.com' });
+    const email = { email: 'test@gmail.com' };
+    const phone = { phone: '1234567890' };
 
-    const reminder = new ReminderNotification(new SmsSender());
-    reminder.notify('Hello World!', { phone: '1234567890' });
+    new AlertNotification(new EmailSender()).notify('Hello World!', email);
+    new AlertNotification(new SmsSender()).notify('Hello World!', phone);
+    new ReminderNotification(new EmailSender()).notify('Hello World!', email);
+    new ReminderNotification(new SmsSender()).notify('Hello World!', phone);
 };
 main();
