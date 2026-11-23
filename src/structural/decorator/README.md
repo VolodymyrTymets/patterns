@@ -1,0 +1,56 @@
+## Decorator actors
+
+```
+┌─────┬─────────────────────┬──────────────────────────────────────────────────┬──────────────────────────────┐
+│  #  │        Role         │                    What it is                    │       In my example          │
+├─────┼─────────────────────┼──────────────────────────────────────────────────┼──────────────────────────────┤
+│ 1   │ Component           │ Common interface for plain objects and their     │ ISender                      │
+│     │                     │ decorators; the client only knows this type      │ send(message, to)            │
+├─────┼─────────────────────┼──────────────────────────────────────────────────┼──────────────────────────────┤
+│ 2   │ Concrete Component  │ Basic object that does the real work and that    │ EmailSender                  │
+│     │                     │ can be wrapped by decorators                     │ SmsSender                    │
+│     │                     │                                                  │ WhatsappSender               │
+│     │                     │                                                  │ FlakySmsSender               │
+│     │                     │                                                  │ (fails N times, then sends;  │
+│     │                     │                                                  │ used to demo RetrySender)    │
+├─────┼─────────────────────┼──────────────────────────────────────────────────┼──────────────────────────────┤
+│ 3   │ Base Decorator      │ Implements the Component interface, holds a     │ SenderDecorator              │
+│     │                     │ reference to a wrapped Component and delegates   │ (holds an ISender, forwards  │
+│     │                     │ every call to it                                 │ send to it)                  │
+├─────┼─────────────────────┼──────────────────────────────────────────────────┼──────────────────────────────┤
+│ 4   │ Concrete Decorator  │ Adds behavior before or after delegating to the  │ LoggingSender                │
+│     │                     │ wrapped Component, without changing its class    │ RetrySender                  │
+│     │                     │                                                  │ (retries up to maxAttempts)  │
+├─────┼─────────────────────┼──────────────────────────────────────────────────┼──────────────────────────────┤
+│ 5   │ Client              │ Wraps a Component in one or more decorators in   │ main()                       │
+│     │                     │ the order it needs and uses the result as a      │ (stacks decorators around a  │
+│     │                     │ normal Component                                 │ sender, calls send)          │
+└─────┴─────────────────────┴──────────────────────────────────────────────────┴──────────────────────────────┘
+```
+
+### Key point
+
+Behavior is added to an object at runtime by wrapping it, not by subclassing. A **Decorator**
+implements the same **Component** interface as the object it wraps, so the client cannot tell
+the difference, and decorators can be stacked in any order
+(`new LoggingSender(new RetrySender(new EmailSender()))`). Each decorator does its extra work
+(log, retry) and then forwards `send` to the wrapped sender. In the example `RetrySender`
+wraps a `FlakySmsSender` that fails twice, so the send succeeds on the third attempt, and the
+same `RetrySender` is reused around an `EmailSender` without changing either class. This avoids a class explosion
+such as `LoggingEmailSender`, `RetryEmailSender`, `LoggingRetrySmsSender`, ... for every
+combination of features and senders.
+
+### Decorator vs Composite
+
+The structure looks similar (both implement the Component interface and hold Components), but
+the intent differs:
+
+- **Composite** holds many children and combines their results, so a group behaves like a
+  single object.
+- **Decorator** wraps exactly one object and adds responsibilities to it, without changing
+  its interface.
+
+### Decorator vs Adapter
+
+- **Adapter** changes the interface of an existing object so it fits what the client expects.
+- **Decorator** keeps the same interface and only adds behavior.
