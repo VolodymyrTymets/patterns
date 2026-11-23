@@ -54,3 +54,25 @@ the intent differs:
 
 - **Adapter** changes the interface of an existing object so it fits what the client expects.
 - **Decorator** keeps the same interface and only adds behavior.
+
+### `@` decorator variant (TypeScript)
+
+`decorators.ts` shows the same idea with the native `@` syntax (TC39 decorators, TS 5+, no
+`tsconfig` flag needed). The roles map differently, because a decorator wraps a **method**
+instead of an object:
+
+| Role in the class version | In `decorators.ts`                                              |
+| ------------------------- | --------------------------------------------------------------- |
+| Component                 | `ISender`                                                       |
+| Concrete Component        | `EmailSender`, `FlakySmsSender` (their `send` method is wrapped) |
+| Base + Concrete Decorator | `@Logging` (decorator), `@Retry(maxAttempts)` (decorator factory) |
+| Client                    | `main()`                                                        |
+
+- A decorator is a function that takes the original method and returns a replacement that
+  adds behavior and then calls the original.
+- `@Retry(3)` is a **decorator factory**: it takes its own parameter and returns the decorator.
+- Decorators are applied bottom-up, so with `@Logging` above `@Retry()` the logging wraps the
+  retry.
+- The wrapping happens once, when the class is defined. A class decorated this way always has
+  that behavior, whereas the class-based version lets the client choose and reorder
+  decorators for each object at runtime.
